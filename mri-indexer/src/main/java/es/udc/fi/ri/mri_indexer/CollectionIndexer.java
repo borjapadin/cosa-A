@@ -18,7 +18,9 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class CollectionIndexer {
-
+	
+	/**Detallamos la manera correcta en la que se deberían de pasarse las opciones
+	 * a la hora de poder usarlas*/
 	private static String usage = "mri_indexer Usage: "
 			+ " [-openmode OPENMODE] [-index PATH] [-coll PATH] "
 			+ " [-multithread] [-addindexes] \n\n";
@@ -28,7 +30,9 @@ public class CollectionIndexer {
 	private static String collPath = null;
 	
 	
-	
+	/**Comporbamos que los argumentos que se nos pasan tienen valores válidos
+	 * openMode = debe pasarse uno de los siguientes valores: create, append o create_or_append
+	 * si nos pasan las opciones de collPath o indexPath comprobaremos que no sean nulas*/
 	private static void validateArgs() {
 		if (openMode == null
 				|| (!openMode.equals("create") && !openMode.equals("append") && !openMode.equals("create_or_append"))) {
@@ -60,15 +64,18 @@ public class CollectionIndexer {
 		return hostname;
 	}
 
-	
+	/**Dependiendo del modo de apertura del fichero:
+	 * append: abrimremos un índice que ya existe para modificar su contenido
+	 * create: Creamos un nuevo índice en el directorio, eliminando cualquier
+	 * documento de indexación
+	 * create_or_append: Creamos un nuevo índice en caso de que no exista otro anteriormente,
+	 * sino, abrimos para seguir añadiendo en el que ya teníamos*/
 	private static void setOpenMode(IndexWriterConfig config, String openMode) {
 		switch (openMode) {
 		case "append":
 			config.setOpenMode(OpenMode.APPEND);
 			break;
 		case "create":
-			// Create a new index in the directory, removing any
-			// previously indexed documents:
 			config.setOpenMode(OpenMode.CREATE);
 			break;
 		case "create_or_append":
@@ -77,8 +84,9 @@ public class CollectionIndexer {
 		}
 	}
 
-
-	
+	/**creamos el índice
+	 * Si solamente recibimos una dirección, la indexamos
+	 * sino, indexamos todas ellas*/
 	private static void index (Path docDir, List<Path> docDirList) {
 		Directory dir = null;
 		
@@ -91,16 +99,12 @@ public class CollectionIndexer {
 		String hostName = getHostName();
 		
 		try {
-			//creamos el índice
 			dir = FSDirectory.open(Paths.get(indexPath));
 			IndexWriter writer = new IndexWriter(dir, config);
-
-			// if we have only one docDir, we index it
 			if (docDir != null) {
 				System.out.println("Indexing only " + docDir);
 				ThreadPool1.indexDocuments(writer, docDir, hostName);
 			} else {
-				// else, we index all of them
 				for (Path docPath : docDirList) {
 					ThreadPool1.indexDocuments(writer, docPath, hostName);
 				}
@@ -117,7 +121,10 @@ public class CollectionIndexer {
 		//List<String> docsPaths = new ArrayList<String>(); //array con los paths donde están los documentos a indexar
 		
 		String option = null;
-				
+		
+		/** Recorremos los argumentos que se nos han pasado 
+		 * Determinamos la opción que se nos ha pasado y en caso de tener información asociada
+		 * la obtenemos junto a dicha opción*/
 		for(int i=0; i<args.length; i++) {
 			switch (args[i]) {
 			case "-openmode":
@@ -143,12 +150,11 @@ public class CollectionIndexer {
 		}
 		
 		validateArgs();
-		
-		// Now we have to see which option was provided
-		// if we have collPath:
+
 		Path docDir = null;
 		List<Path> docDirList = null;
-		
+		/**Si recibimos collPath:
+		 * Comprobaremos que el path se puede alcanzar*/
 		docDir = Paths.get(collPath);
 		if (!Files.isReadable(docDir)) {
 			System.out.println("Document directory '" + docDir.toAbsolutePath()

@@ -16,7 +16,7 @@ import org.apache.lucene.store.FSDirectory;
 
 
 public class Process {
-	
+	//No se si el indexin al que te refieres variaas veces aqui te quieres referir al indexFiles que inicializas
 	private static String usage = "mri-indexer Index Processer"
 			+ " [-indexin INDEXFILE] [-best_idfterms FIELD N] [-tfpos FIELD TERM]\n"
 			+ " [-termstfpos1 DOCID FIELD ORD] [-termstfpos2 PATHSGM NEWID FIELD ORD]\n\n";
@@ -31,7 +31,8 @@ public class Process {
 	private static String pathSgm = null;
 
 
-	
+	/**Comporbamos que las opciones que posibilitamos estén inicializadas
+	 * De lo contrario se detalla lo que debería de acompañarlas*/
 	private static void validateArgs() {
 		if (indexFile == null) {
 			System.err.println("At least indexin: " + usage);
@@ -59,7 +60,12 @@ public class Process {
 		}
 	}
 	
-	
+	/**A continuación realizaremos:
+	 * -De ser posible leemos el índice
+	 * -Determinamos el número de documentos de los que cuenta la colección,
+	 *	para ello usaremos numDocs, que devuelve el número de Docs no borrados (ni lógica, ni física)
+	 * -Obtenemos los terminos asociados al campo field, los guardamos en un variable,
+	 * para después poder iterar sobre los elementos que la conforman*/
 	private static ArrayList<TuplaTermIdf> calculateIdfTerms (String indexFile, String field){
 		DirectoryReader indexReader = null;
 		Directory dir = null;
@@ -108,7 +114,8 @@ public class Process {
 	}
 	
 	
-	//devuelve ordenados por idf, con el número de orden y el valor de idf, los n mejores términos del campo field
+	/**Devuelve ordenados por idf, con el número de orden y el valor de idf, 
+	 * los n mejores términos del campo field*/
 	public static void bestIdfTerms (String indexFile, String field, int n){
 		ArrayList<TuplaTermIdf> idfTerms = calculateIdfTerms(indexFile, field);
 		
@@ -123,44 +130,57 @@ public class Process {
 	
 	
 	
-	/* 
-	 * construye un listado con la siguiente información:
-	 * 		docId de Lucene
-	 * 		PathSmg
-	 * 		OldId
-	 * 		NewId del documento donde se encuentra el término
-	 * 		tf (frecuencia del término en el documento)
-	 * 		posiciones del término en el documento
-	 * 		df del término
+	/**Construye un listado con la siguiente información:
+	 *	docId de Lucene
+	 *	PathSmg
+	 *	OldId
+	 *	NewId del documento donde se encuentra el término
+	 *	tf (frecuencia del término en el documento)
+	 *	posiciones del término en el documento
+	 *	df del término
 	 *
-	 * ------ El campo field debe haberse creado con las opciones de indexación de docs, freqs y positions. */
+	 * - El campo field debe haberse creado con las opciones de indexación de docs, 
+	 * - freqs y positions. */
 	public static void tfPos (String indexFile, String field, String term) {
 		
 	}
 	
 	
 	
-	/*
-	 * construye un listado con la siguiente información: 
-	 * 		término
-	 * 		docId de Lucene
-	 * 		PathSgm
-	 * 		OldId
-	 * 		NewId del documento donde se encuentra el término
-	 * 		tf (frecuencia del término en el documento)
-	 * 		posiciones del término en el documento
-	 * 		 df del término
-	 
-  	 * ------ El campo debe haberse creado con las opciones de indexación de docs, freqs y positions.
-	 * ------ El listado vendrá ordenado según el valor de ord: 
-	 *  			0 alfabético
-	 *  			1 por orden decreciente de tf
-	 *  			2 por orden decreciente de df  */
+	/**Construye un listado con la siguiente información: 
+	 *	término
+	 *	docId de Lucene
+	 *	PathSgm
+	 *	OldId
+	 *	NewId del documento donde se encuentra el término
+	 *	tf (frecuencia del término en el documento)
+	 *	posiciones del término en el documento
+	 *  df del término
+	 *  
+  	 * - El campo debe haberse creado con las opciones de indexación de docs, freqs y positions.
+	 * - El listado vendrá ordenado según el valor de ord: 
+	 *  	0 alfabético
+	 *  	1 por orden decreciente de tf
+	 *  	2 por orden decreciente de df  */
 	public static void termsTfPos1 (String indexFile, int docId, String field, int ord) {
 		
 	}
 	
-
+	/**Construye un listado con la siguiente información: 
+	 *	término
+	 *	docId de Lucene
+	 *	PathSgm
+	 *	OldId
+	 *	NewId del documento donde se encuentra el término
+	 *	tf (frecuencia del término en el documento)
+	 *	posiciones del término en el documento
+	 *  df del término
+	 *  
+  	 * - El campo debe haberse creado con las opciones de indexación de PathSgm y NewId.
+	 * - El listado vendrá ordenado según el valor de ord: 
+	 *  	0 alfabético
+	 *  	1 por orden decreciente de tf
+	 *  	2 por orden decreciente de df  */
 	//lo mismo que la opción -termstfpos1, pero para un documento identificado por su PathSgm y NewId
 	public static void termsTfPos2 (String indexFile, String pathSgm, int newId, String field, int ord) {
 		
@@ -174,6 +194,9 @@ public class Process {
 		if (args.length != 5)
 			System.err.println("Invalid arguments: " + usage);
 		
+		/** Recorremos los argumentos que se nos han pasado 
+		 * Determinamos la opción que se nos ha pasado y en caso de tener información asociada
+		 * la obtenemos junto a dicha opción*/
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
 			

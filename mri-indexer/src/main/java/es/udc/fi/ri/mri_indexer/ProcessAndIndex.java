@@ -23,7 +23,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 
 
 public class ProcessAndIndex {
-
+	//lo mismo que en process pero ahora pasa con indexinFile
 	private static String usage = "mri-indexer Process and Index"
 			+ " [-indexin INDEXFILE] [-indexout INDEXFILE] [-deldocsterm TERM] [-deldocsquery QUERY]\n"
 			+ " [-summaries] [-multithread N]\n\n";
@@ -36,7 +36,8 @@ public class ProcessAndIndex {
 	private static String n = null;
 	
 	
-	
+	/**Comporbamos que las opciones que posibilitamos estén inicializadas
+	 * De lo contrario se detalla lo que debería de acompañarlas*/
 	private static void validateArgs() {
 		if (indexinFile == null) {
 			System.err.println("At least indexin: " + usage);
@@ -65,6 +66,8 @@ public class ProcessAndIndex {
 		}	
 	}
 	
+	/**Obtendremos la driección donde crearemos el índice
+	 * y de ser posible se creará*/
 	private static IndexWriter createIndexWriter(String indexinFile){	
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -93,7 +96,7 @@ public class ProcessAndIndex {
 		return null;
 	}
 	
-	
+	/**Leemos el índice*/
 	private static IndexReader createIndexReader(String indexinFolder){
 		Directory dir = null;
 		DirectoryReader indexReader = null;
@@ -115,8 +118,7 @@ public class ProcessAndIndex {
 		return null;
 	}
 	
-	
-	//borra los documentos que contienen el término especificado
+	/**Borraremos los documentos que contengan el término especificado*/
 	public static void delDocsTerm(String indexinFolder, String field, String term){
 		IndexWriter writer = createIndexWriter(indexinFolder);
 		
@@ -140,8 +142,9 @@ public class ProcessAndIndex {
 		}
 	}
 	
-	
-	//borra los documentos que satisfacen la query
+	/**Borraremos los documentos que satisfagan la query, para ello:
+	 * -Accederemos a los campos del índice
+	 * -Construimos el parser con los datos del campo y analizador y parseamos la query*/
 	public static void delDocsQuery(String indexinFolder, String query){
 		QueryParser parser;
 		Query q = null;
@@ -150,7 +153,7 @@ public class ProcessAndIndex {
 		IndexWriter writer = createIndexWriter(indexinFolder);
 		//IndexSearcher searcher = new IndexSearcher(reader);
 		
-		//IDEA: SOLO PARSEAR EL CAMPO BODY
+		//IDEA: SOLO PARSEAR EL CAMPO BODY//¿porque?
 		try {
 			//accedemos a los campos del índice
 			Fields fields = MultiFields.getFields(reader);	
@@ -180,16 +183,16 @@ public class ProcessAndIndex {
 	}
 	
 	
-	//crea un índice con resúmenes de los documentos
-	//en esta opción es necesario especificar las rutas para -indexin y -indexout
-	//contiene los mismo campos y contenidos y un campo nuevo Resumen 
-	//campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento
+	/**Crea un índice con resúmenes de los documentos
+	 * en esta opción es necesario especificar las rutas para -indexin y -indexout
+	 * contiene los mismo campos y contenidos y un campo nuevo Resumen 
+	 * campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento*/
 	public static void summaries (String indexinFolder, String indexoutFolder) {
 		
 	}
 	
 	
-	//creación de resúmenes con n hilos
+	/**Creación de resúmenes con n hilos*/
 	public static void multithread (int n) {
 		
 	}
@@ -204,6 +207,9 @@ public class ProcessAndIndex {
 			return;
 		}
 		
+		/** Recorremos los argumentos que se nos han pasado 
+		 * Determinamos la opción que se nos ha pasado y en caso de tener información asociada
+		 * la obtenemos junto a dicha opción*/
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
 			case "-indexinFile":

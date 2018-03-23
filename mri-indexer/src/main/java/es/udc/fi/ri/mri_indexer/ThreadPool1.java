@@ -21,9 +21,10 @@ import org.apache.lucene.index.IndexWriter;
 
 public class ThreadPool1 {
 
-	
 	public static final FieldType TYPE_BODY = new FieldType();
-	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS; // indexa documentos y frecuencia
+	/**indexa documentos y frecuencia*/
+	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS;
+	/**Definimos los campos a indexar*/
 	static {
 		TYPE_BODY.setIndexOptions(options);
 		TYPE_BODY.setTokenized(true);
@@ -33,7 +34,7 @@ public class ThreadPool1 {
 		TYPE_BODY.freeze();
 	}
 
-	
+	/**Añadimos los elementos al índice*/
 	private static void addFields(IndexWriter writer, Path path, String hostname) {
 		System.out.println(Thread.currentThread().getId() + " - Indexing " + path);
 		
@@ -71,7 +72,10 @@ public class ThreadPool1 {
 	}
 
 	
-	// Parsea los documentos que se quieren indexar, y los envia addFields para que los añada al indice
+	/** Parsea los documentos que se quieren indexar, 
+	 * y los envía addFields para que los añada al índice
+	 * Comprobaremos que los que se nos pasan son directorios para tener que recorrerlos
+	 * o enviarlos a addFiles*/
 	public static void indexDocuments(IndexWriter writer, Path path, String hostName) throws IOException{
 		System.out.println("Indexing documents in " + path);
 		
@@ -93,7 +97,9 @@ public class ThreadPool1 {
 		}
 	}
 	
-	
+	/**Determinamos si la ruta que se nos pas a es un documento o un directorio
+	 * Pasamos el resultado a indexDocuments para que determine si, en caso de que sea un directorio,
+	 * tenga que recorrerlo o no*/
 	protected static void indexDocs(final IndexWriter writer, Path path, String hostname) throws IOException {
 		System.out.println("indexDocs in " + path);
 		if (Files.isDirectory(path)) {
@@ -115,7 +121,8 @@ public class ThreadPool1 {
 		}
 	}
 	
-	
+	/**Comprobamos el nombre de la ruta que se nos pasa para comprobar si es
+	 * uno de los documentos que queremos indexar*/
 	public static boolean checkFileName(Path path) {
 		final String fileNameBegin;
 		final String fileNameEnd;
@@ -139,9 +146,8 @@ public class ThreadPool1 {
 	}
 	
 	
-	/**
-	 * This Runnable takes a folder and prints its path.
-	 */
+	/**Imprimimos la ruta de una carpeta
+	 * Este método es ejecutable*/
 	public static class WorkerThread implements Runnable {
 
 		private final IndexWriter writer;
@@ -156,9 +162,8 @@ public class ThreadPool1 {
 		
 		
 		/**
-		 * This is the work that the current thread will do when processed by
-		 * the pool. In this case, it will only print some information.
-		 */
+		 * Esto es lo que hará el hilo cuando sea procesado por el pool de conexiones
+		 * En este caso, mostrará información*/
 		@Override
 		public void run() {
 			System.out.println(String.format("I am the thread '%s'", Thread.currentThread().getName()));
