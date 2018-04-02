@@ -86,14 +86,11 @@ public class Reuters21578Parser {
 		/* Each topic inside TOPICS is identified with a tag D */
 		/* If the BODY ends with boiler plate text, this text is removed */
 
-		String newID = extract("NEWID", text, true);
-		String oldID = extract("OLDID", text, true);
 		String topics = extract("TOPICS", text, true);
 		String title = extract("TITLE", text, true);
 		String dateline = extract("DATELINE", text, true);
 		String body = extract("BODY", text, true);
 		String date = extract("DATE", text, true);
-		
 		if (body.endsWith(END_BOILERPLATE_1)
 				|| body.endsWith(END_BOILERPLATE_2))
 			body = body
@@ -105,8 +102,6 @@ public class Reuters21578Parser {
 				""));
 		document.add(dateline);
 		document.add(date);
-		document.add(newID);
-		document.add(oldID);
 		return document;
 	}
 

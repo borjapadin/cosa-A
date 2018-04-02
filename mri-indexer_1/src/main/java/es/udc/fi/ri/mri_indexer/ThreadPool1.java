@@ -61,10 +61,6 @@ public class ThreadPool1 {
 				doc.add(new StringField("PathSgm", path.toString(), Field.Store.YES));
 				doc.add(new StringField("Hostname", hostname, Field.Store.YES));
 				doc.add(new StringField("Thread", Thread.currentThread().getName(), Field.Store.YES));
-				
-				doc.add(new StringField("NewId", field, Field.Store.YES));
-				doc.add(new StringField("OldId", field, Field.Store.YES)); 
-				
 				writer.addDocument(doc);
 				doc = new Document();
 			}
