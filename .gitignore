@@ -2,3 +2,4 @@
 mri-indexer/.project
 mri-indexer/.classpath
 *.prefs
+mri-indexer/target/classes/es/udc/fi/ri/mri_indexer/CollectionIndexer.class
