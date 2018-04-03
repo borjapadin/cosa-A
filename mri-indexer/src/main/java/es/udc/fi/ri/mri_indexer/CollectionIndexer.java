@@ -165,7 +165,7 @@ public class CollectionIndexer {
 	}
 
 	
-	public static void main (String args[]){
+	public static void main (String args[]) throws IOException{
 		//List<String> docsPaths = new ArrayList<String>(); //array con los paths donde están los documentos a indexar
 		
 		String option = null;
@@ -220,6 +220,7 @@ public class CollectionIndexer {
 			index(docDir, docDirList);
 			break;
 		case "-multithread": 
+			multithread(docDirList);
 			break;
 		case "-addindexes":
 			break;

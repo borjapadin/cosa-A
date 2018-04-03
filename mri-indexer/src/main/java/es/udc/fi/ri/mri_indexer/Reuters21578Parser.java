@@ -42,6 +42,8 @@ public class Reuters21578Parser {
 		 * strings, one string for each line
 		 */
 		String[] lines = text.split("\n");
+		
+		String[] words = text.split(" ");
 
 		/*
 		 * For each Reuters article the parser returns a list of strings where
@@ -60,6 +62,7 @@ public class Reuters21578Parser {
 			if (!lines[i].startsWith("<REUTERS"))
 				continue;
 			StringBuilder sb = new StringBuilder();
+			
 			while (!lines[i].startsWith("</REUTERS")) {
 				sb.append(lines[i++]);
 				sb.append("\n");
@@ -86,13 +89,12 @@ public class Reuters21578Parser {
 		/* Each topic inside TOPICS is identified with a tag D */
 		/* If the BODY ends with boiler plate text, this text is removed */
 
-		String newID = extract("NEWID", text, true);
-		String oldID = extract("OLDID", text, true);
 		String topics = extract("TOPICS", text, true);
 		String title = extract("TITLE", text, true);
 		String dateline = extract("DATELINE", text, true);
 		String body = extract("BODY", text, true);
 		String date = extract("DATE", text, true);
+		
 		
 		if (body.endsWith(END_BOILERPLATE_1)
 				|| body.endsWith(END_BOILERPLATE_2))
@@ -105,8 +107,6 @@ public class Reuters21578Parser {
 				""));
 		document.add(dateline);
 		document.add(date);
-		document.add(newID);
-		document.add(oldID);
 		return document;
 	}
 

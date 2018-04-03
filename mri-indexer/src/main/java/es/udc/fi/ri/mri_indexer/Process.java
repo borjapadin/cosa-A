@@ -30,8 +30,8 @@ public class Process {
 	private static String n = null;
 	private static String ord = null;
 	private static String docId = null;
-	private static String newId = null;
-	private static String pathSgm = null;
+	//private static String newId = null;
+	//private static String pathSgm = null;
 
 	private static void validateArgs() {
 		if (indexFile == null) {
@@ -54,10 +54,10 @@ public class Process {
 			System.exit(1);
 		}
 
-		if ((pathSgm == null) && (newId == null) && (field == null) && (ord == null)) {
+		/*if ((pathSgm == null) && (newId == null) && (field == null) && (ord == null)) {
 			System.err.println("Necesary parameters missing in option -termstfpos2: " + usage);
 			System.exit(1);
-		}
+		}*/
 	}
 
 	private static ArrayList<TuplaTermIdf> calculateIdfTerms(String indexFile, String field) {
@@ -164,11 +164,11 @@ public class Process {
 				int docId = positions.docID();
 				Document doc = indexReader.document(docId);	
 				String pathSgm = doc.get("PathSgm");
-				String oldId = doc.get("OldId");
-				String newId = doc.get("NewId");		
+				//String oldId = doc.get("OldId");
+				//String newId = doc.get("NewId");		
 				int tf = positions.freq();
 		
-				termList.add(new Termino(tt, docId, pathSgm, oldId, newId, tf, positions, df));
+				termList.add(new Termino(tt, docId, pathSgm, tf, positions, df));
 			}
 		}
 		indexReader.close();	
@@ -218,11 +218,11 @@ public class Process {
 			while (positions.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 				Document doc = indexReader.document(docId);	
 				String pathSgm = doc.get("PathSgm");
-				String oldId = doc.get("OldId");
-				String newId = doc.get("NewId");		
+				//String oldId = doc.get("OldId");
+				//String newId = doc.get("NewId");		
 				int tf = positions.freq();
 				
-				termList.add(new Termino(tt, docId, pathSgm, oldId, newId, tf, positions, df));
+				termList.add(new Termino(tt, docId, pathSgm, tf, positions, df));
 			}
 		}
 		indexReader.close();
@@ -243,16 +243,14 @@ public class Process {
 		
 		for (int i = 1; i <= termList.size(); i++) {
 			Termino term = termList.get(i - 1);
-			System.out.println("DocID" + term.getDocId() + "\tPathSgm: " + term.getPathSgm()+ "\tOldID" + term.getOldId() +
-					"\tNewID: " + term.getNewId() + 
-					"\ttf " + term.getTf() + "\tdf: " + term.getDf());
+			System.out.println("DocID" + term.getDocId() + "\tPathSgm: " + term.getPathSgm() + term.getTf() + "\tdf: " + term.getDf());
 		}
 		
 	}
 
 	// lo mismo que la opción -termstfpos1, pero para un documento identificado por
 	// su PathSgm y NewId
-	public static void termsTfPos2(String indexFile, String pathSgm, String newId, String field, int ord) throws IOException {
+	/*public static void termsTfPos2(String indexFile, String pathSgm, String newId, String field, int ord) throws IOException {
 		DirectoryReader indexReader = null;
 		Directory dir = null;
 		
@@ -288,7 +286,7 @@ public class Process {
 				String oldId = doc.get("OldId");	
 				int tf = positions.freq();
 				
-				termList.add(new Termino(tt, docId, pathSgm, oldId, newId, tf, positions, df));
+				termList.add(new Termino(tt, docId, pathSgm, tf, positions, df));
 			}
 		}
 		indexReader.close();
@@ -309,12 +307,11 @@ public class Process {
 		
 		for (int i = 1; i <= termList.size(); i++) {
 			Termino term = termList.get(i - 1);
-			System.out.println("DocID" + term.getDocId() + "\tPathSgm: " + term.getPathSgm()+ "\tOldID" + term.getOldId() +
-					"\tNewID: " + term.getNewId() + 
+			System.out.println("DocID" + term.getDocId() + "\tPathSgm: " + term.getPathSgm()+ 
 					"\ttf " + term.getTf() + "\tdf: " + term.getDf());
 		}
 		
-	}
+	}*/
 
 	public static void main(final String[] args) throws IOException {
 		String option = null;
@@ -349,14 +346,14 @@ public class Process {
 				ord = args[i + 3];
 				i += 3;
 				break;
-			case "-termstfpos2":
+			/*case "-termstfpos2":
 				option = args[i];
 				pathSgm = args[i + 1];
 				newId = args[i + 2];
 				field = args[i + 3];
 				ord = args[i + 4];
 				i += 4;
-				break;
+				break;*/
 			}
 		}
 
@@ -374,9 +371,9 @@ public class Process {
 		case "-termstfpos1":
 			termsTfPos1(indexFile, Integer.parseInt(docId), field, Integer.parseInt(ord));
 			break;
-		case "-termstfpos2":
+		/*case "-termstfpos2":
 			termsTfPos2(indexFile, pathSgm, newId, field, Integer.parseInt(ord));
-			break;
+			break;*/
 		default:
 			System.err.println("Invalid arguments (" + option + "): " + usage);
 			System.exit(1);
