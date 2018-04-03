@@ -1,6 +1,5 @@
 package es.udc.fi.ri.mri_indexer;
 
-import ThreadPool1;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -126,8 +125,8 @@ public class CollectionIndexer {
 	 *  El número de hilos vienen dado sólo por el número de subcarpetas de primer nivel y se puede suponer que en la carpeta raíz no hay archivos *.sgm y que
 	 *		se usa sólo como contenedera de las subcarpetas que contienen los archivos *.sgm.
 	 */
-	private static void multithread (Path docDir, List<Path> docDirList) {
-		Directory dir = FSDirectory.open(Paths.get(indexes2Path));
+	private static void multithread (List<Path> docDirList) throws IOException {
+		Directory dir = FSDirectory.open(Paths.get(collPath));
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
@@ -170,7 +169,8 @@ public class CollectionIndexer {
 		//List<String> docsPaths = new ArrayList<String>(); //array con los paths donde están los documentos a indexar
 		
 		String option = null;
-				
+
+		
 		for(int i=0; i<args.length; i++) {
 			switch (args[i]) {
 			case "-openmode":
@@ -187,9 +187,11 @@ public class CollectionIndexer {
 				i++;
 				break;
 			case "-multithread":
+				option = args[i];
 				i++;
 				break;
 			case "-addindexes":
+				option = args[i];
 				i++;
 				break;
 			}		
@@ -217,6 +219,11 @@ public class CollectionIndexer {
 		case "-index":
 			index(docDir, docDirList);
 			break;
+		case "-multithread": 
+			break;
+		case "-addindexes":
+			break;
+			
 		}
 			
 	
