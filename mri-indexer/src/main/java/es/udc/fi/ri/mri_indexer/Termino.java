@@ -7,19 +7,19 @@ public class Termino {
 	private String term;
 	private int docId;
 	private String pathSgm;
-	private String oldId;
-	private String newId;
+	//private String oldId;
+	//private String newId;
 	private double tf;
 	private PostingsEnum positions; 
 	private double df;
 		
 	
-	public Termino(String term, int docId, String pathSgm, String oldId, String newId, double tf, PostingsEnum positions, double df) {
+	public Termino(String term, int docId, String pathSgm, double tf, PostingsEnum positions, double df) {
 		this.term = term;
 		this.docId = docId;
 		this.pathSgm = pathSgm;
-		this.oldId = oldId;
-		this.newId = newId;
+		//this.oldId = oldId;
+		//this.newId = newId;
 		this.tf = tf;
 		this.positions = positions;
 		this.df = df;
@@ -44,20 +44,7 @@ public class Termino {
 	public void setPathSgm(String pathSgm) {
 		this.pathSgm = pathSgm;
 	}
-	public String getOldId() {
-		return oldId;
-	}
-	public void setOldId(String oldId) {
-		this.oldId = oldId;
-	}
-	public String getNewId() {
-		return newId;
-	}
-	
-	public void setNewId(String newId) {
-		this.newId = newId;
-	}
-	
+
 	public double getTf() {
 		return tf;
 	}

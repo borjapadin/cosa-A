@@ -62,9 +62,6 @@ public class ThreadPool1 {
 				doc.add(new StringField("Hostname", hostname, Field.Store.YES));
 				doc.add(new StringField("Thread", Thread.currentThread().getName(), Field.Store.YES));
 				
-				doc.add(new StringField("NewId", field, Field.Store.YES));
-				doc.add(new StringField("OldId", field, Field.Store.YES)); 
-				
 				writer.addDocument(doc);
 				doc = new Document();
 			}
@@ -167,7 +164,7 @@ public class ThreadPool1 {
 		public void run() {
 			System.out.println(String.format("I am the thread '%s'", Thread.currentThread().getName()));
 			try {
-				indexDocuments(writer, path, hostname);
+				indexDocs(writer, path, hostname);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
