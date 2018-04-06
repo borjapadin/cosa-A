@@ -32,7 +32,11 @@ public class Process {
 	private static String docId = null;
 	//private static String newId = null;
 	//private static String pathSgm = null;
-
+	
+	/**
+	 * En este método, comprobaremos que los parámetros que se nos pasan son correctos en forma,
+	 * en caso contrario, mostraremos un mensaje detallando la forma correcta
+	 * */
 	private static void validateArgs() {
 		if (indexFile == null) {
 			System.err.println("At least indexin: " + usage);
@@ -60,6 +64,10 @@ public class Process {
 		}*/
 	}
 
+	/**
+	 * Calculamos el idf de los términos del índice y los colocamos en una tupla,
+	 * termino - idf
+	 * */
 	private static ArrayList<TuplaTermIdf> calculateIdfTerms(String indexFile, String field) {
 		DirectoryReader indexReader = null;
 		Directory dir = null;
@@ -106,9 +114,10 @@ public class Process {
 		return idfTerms;
 	}
 	
-	
-	// devuelve ordenados por idf, con el número de orden y el valor de idf, los n
-	// mejores términos del campo field
+	/**
+	 * Devuelve ordenados por idf, con el número de orden y el valor de idf, 
+	 * los n mejores términos del campo field
+	 * */
 	public static void bestIdfTerms(String indexFile, String field, int n) {
 		ArrayList<TuplaTermIdf> idfTerms = calculateIdfTerms(indexFile, field);
 
@@ -121,13 +130,17 @@ public class Process {
 		}
 	}
 
-	/*
-	 * construye un listado con la siguiente información: docId de Lucene PathSmg
-	 * OldId NewId del documento donde se encuentra el término tf (frecuencia del
-	 * término en el documento) posiciones del término en el documento df del
-	 * término
+	/**
+	 * Construye un listado con la siguiente información: 
+	 * 	docId de Lucene 
+	 * 	PathSmg
+	 * 	OldId /No implementado
+	 * 	NewId del documento donde se encuentra el término /No implementado
+	 * 	tf (frecuencia del término en el documento)
+	 *  posiciones del término en el documento 
+	 * 	df del término
 	 *
-	 * ------ El campo field debe haberse creado con las opciones de indexación de
+	 * El campo field debe haberse creado con las opciones de indexación de
 	 * docs, freqs y positions.
 	 */
 	public static void tfPos (String indexFile, String field, String term) throws IOException {
@@ -148,18 +161,18 @@ public class Process {
 			e1.printStackTrace();
 		}
 	
-	
+		//obtenemos los términos junto con el iterador para poder recorrer el índice
 		final Terms terms = MultiFields.getTerms(indexReader, field);
 		final TermsEnum termsEnum = terms.iterator();
 
 		while (termsEnum.next() != null) {
 			BytesRef br = termsEnum.term();
-			
+			//convertimos el término a string
 			final String tt = br.utf8ToString();
 			double df = termsEnum.docFreq();
-			
+			//obtenemos las posiciones de ese término en los distintos documentos
 			PostingsEnum positions = MultiFields.getTermPositionsEnum(indexReader, field, br);
-			
+			//las añadimos a la lista de términos
 			while (positions.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 				int docId = positions.docID();
 				Document doc = indexReader.document(docId);	
@@ -175,15 +188,22 @@ public class Process {
 	}
 
 	
-	/*
-	 * construye un listado con la siguiente información: término docId de Lucene
-	 * PathSgm OldId NewId del documento donde se encuentra el término tf
-	 * (frecuencia del término en el documento) posiciones del término en el
-	 * documento df del término
+	/**
+	 * Construye un listado con la siguiente información: 
+	 * 	término docId de Lucene
+	 * 	PathSgm 
+	 * 	OldId /No implementado
+	 * 	NewId del documento donde se encuentra el término /No implementado
+	 * 	tf (frecuencia del término en el documento) 
+	 * 	posiciones del término en el documento 
+	 * 	df del término
 	 * 
-	 * ------ El campo debe haberse creado con las opciones de indexación de docs,
-	 * freqs y positions. ------ El listado vendrá ordenado según el valor de ord: 0
-	 * alfabético 1 por orden decreciente de tf 2 por orden decreciente de df
+	 * El campo debe haberse creado con las opciones de indexación de docs,
+	 * freqs y positions. 
+	 * El listado vendrá ordenado según el valor de ord: 
+	 * 	0 alfabético 
+	 * 	1 por orden decreciente de tf 
+	 * 	2 por orden decreciente de df
 	 */
 	public static void termsTfPos1(String indexFile, int docId, String field, int ord) throws IOException {
 		DirectoryReader indexReader = null;
@@ -203,18 +223,18 @@ public class Process {
 			System.out.println("Gracefull message: Exception" + e1);
 			e1.printStackTrace();
 		}
-		
+		//obtenemos los términos junto con el iterador para poder recorrer el índice
 		final Terms terms = MultiFields.getTerms(indexReader, field);
 		final TermsEnum termsEnum = terms.iterator();
 
 		while (termsEnum.next() != null) {
 			BytesRef br = termsEnum.term();
-			
+			//convertimos el término a string
 			final String tt = br.utf8ToString();
 			double df = termsEnum.docFreq();
-			
+			//obtenemos las posiciones de ese término en los distintos documentos
 			PostingsEnum positions = MultiFields.getTermPositionsEnum(indexReader, field, br);
-			
+			//las añadimos a la lista de términos
 			while (positions.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 				Document doc = indexReader.document(docId);	
 				String pathSgm = doc.get("PathSgm");
@@ -228,14 +248,14 @@ public class Process {
 		indexReader.close();
 		
 		switch(ord) {
-		
-		case 0:
+		//ordenamos según los parámetros indicados
+		case 0: //alfabético
 			Collections.sort(termList, new TermComparator());
 			break;
-		case 1:
+		case 1: //por orden decreciente de tf 
 			Collections.sort(termList, new TfComparator());
 			break;
-		case 2:
+		case 2: //por orden decreciente de df
 			Collections.sort(termList, new DfComparator());
 			break;
 		
@@ -315,7 +335,11 @@ public class Process {
 
 	public static void main(final String[] args) throws IOException {
 		String option = null;
-
+		
+		/**
+		 * detectamos las opciones de indexación, e indicamos
+		 * la posición del argumento del que recogerán la información
+		 * */
 		if (args.length != 5)
 			System.err.println("Invalid arguments: " + usage);
 
@@ -360,7 +384,8 @@ public class Process {
 		validateArgs();
 
 		Date start = new Date();
-
+		
+		//llamada a los métodos de procesamiento
 		switch (option) {
 		case "-best_idfterms":
 			bestIdfTerms(indexFile, field, Integer.parseInt(n));
