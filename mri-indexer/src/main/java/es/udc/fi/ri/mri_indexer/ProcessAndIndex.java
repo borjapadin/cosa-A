@@ -41,6 +41,10 @@ public class ProcessAndIndex {
 	private static String n = null;
 	
 	
+	/**
+	 * En este método, comprobaremos que los parámetros que se nos pasan son correctos en forma,
+	 * en caso contrario, mostraremos un mensaje detallando la forma correcta
+	 * */
 	private static void validateArgs() {
 		if (indexinFile == null) {
 			System.err.println("At least indexin: " + usage);
@@ -64,6 +68,9 @@ public class ProcessAndIndex {
 		}	
 	}
 	
+	/**
+	 * Creamos el writer junto con la dirección de donde se creará
+	 * */
 	private static IndexWriter createIndexWriter(String indexinFile){	
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -92,7 +99,9 @@ public class ProcessAndIndex {
 		return null;
 	}
 	
-	
+	/**
+	 * Creamos el reader junto con la dirección de donde tiene que leer
+	 * */
 	private static IndexReader createIndexReader(String indexinFolder){
 		Directory dir = null;
 		DirectoryReader indexReader = null;
@@ -115,7 +124,9 @@ public class ProcessAndIndex {
 	}
 	
 	
-	//borra los documentos que contienen el término especificado
+	/**
+	 * Borra los documentos que contienen el término especificado
+	 * */
 	public static void delDocsTerm(String indexinFolder, String field, String term){
 		IndexWriter writer = createIndexWriter(indexinFolder);
 		
@@ -139,8 +150,9 @@ public class ProcessAndIndex {
 		}
 	}
 	
-	
-	//borra los documentos que satisfacen la query
+	/**
+	 * borra los documentos que satisfacen la query
+	 * */
 	public static void delDocsQuery(String indexinFolder, String query){
 		QueryParser parser;
 		Query q = null;
@@ -178,11 +190,12 @@ public class ProcessAndIndex {
 		}
 	}
 	
-	
-	//crea un índice con resúmenes de los documentos
-	//en esta opción es necesario especificar las rutas para -indexin y -indexout
-	//contiene los mismo campos y contenidos y un campo nuevo Resumen 
-	//campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento
+	/**
+	 * Crea un índice con resúmenes de los documentos
+	 * en esta opción es necesario especificar las rutas para -indexin y -indexout
+	 * contiene los mismo campos y contenidos y un campo nuevo Resumen 
+	 * campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento
+	 * */
 	public static void summaries (String indexinFolder, String indexoutFolder, int n) throws IOException {	
 		
 		Directory dir1 = null;
@@ -195,6 +208,7 @@ public class ProcessAndIndex {
 		IndexWriter writer = new IndexWriter(dir2, iwc);
 
 		try {
+			//comprobamos la ruta especificada en el indexin
 			dir1 = FSDirectory.open(Paths.get(indexinFolder));
 			indexReader = DirectoryReader.open(dir1);
 			
@@ -215,7 +229,7 @@ public class ProcessAndIndex {
 			double threads = n;
 			double docs = numDocs;
 			double docsThread = Math.ceil(docs / threads);
-
+			//creamos un nuevo thread
 			final ExecutorService executor = Executors.newFixedThreadPool(n);
 			System.out.println("Creating " + n + " threads");
 			
