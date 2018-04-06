@@ -18,13 +18,13 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 
-
 public class ThreadPool1 {
 
-	
 	public static final FieldType TYPE_BODY = new FieldType();
-	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS; // indexa documentos y frecuencia
+	// indexa documentos y frecuencia
+	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS; 
 	static {
+		//definimos las opciones de indexación
 		TYPE_BODY.setIndexOptions(options);
 		TYPE_BODY.setTokenized(true);
 		TYPE_BODY.setStored(true);
@@ -33,7 +33,9 @@ public class ThreadPool1 {
 		TYPE_BODY.freeze();
 	}
 
-	
+	/**
+	 * Indexamos el documento mediante el writer y guardando el hostname
+	 * */
 	private static void indexDoc(IndexWriter writer, Path path, String hostname) {
 		System.out.println(Thread.currentThread().getId() + " - Indexing " + path);
 		
@@ -43,9 +45,9 @@ public class ThreadPool1 {
 
 			String str = IOUtils.toString(stream, "UTF-8");
 			StringBuffer strBuffer = new StringBuffer(str);
-			
+			//generamos una lista de documentos, parseado con reuters, para extraer la información
 			List<List<String>> documents = Reuters21578Parser.parseString(strBuffer);
-		
+			//para cada documento guardamos los datos que se muestran el bucle
 			for (List<String> document : documents) {
 				int i = 0;
 				field = document.get(i++);
@@ -72,7 +74,9 @@ public class ThreadPool1 {
 	}
 
 	
-	// Parsea los documentos que se quieren indexar, y los envia addFields para que los añada al indice
+	/**
+	 * Parsea los documentos que se quieren indexar, y los envia a indexDoc para que los añada al indice
+	 * */
 	protected static void indexDocs(final IndexWriter writer, Path path, String hostname) throws IOException {
 		System.out.println("indexDocs in " + path);
 		if (Files.isDirectory(path)) {
@@ -94,8 +98,9 @@ public class ThreadPool1 {
 		}
 	}
 	
-	
-	
+	/**
+	 * Comprobamos el nombre del fichero para saber si se debe indexar o no
+	 * */
 	public static boolean checkFileName(Path path) {
 		final String fileNameBegin;
 		final String fileNameEnd;

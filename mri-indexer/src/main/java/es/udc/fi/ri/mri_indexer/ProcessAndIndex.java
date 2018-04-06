@@ -195,6 +195,8 @@ public class ProcessAndIndex {
 	 * en esta opción es necesario especificar las rutas para -indexin y -indexout
 	 * contiene los mismo campos y contenidos y un campo nuevo Resumen 
 	 * campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento
+	 * 
+	 * Esto lo que hace es comprobar si se debe hacer un summaries con varios threads o con uno
 	 * */
 	public static void summaries (String indexinFolder, String indexoutFolder, int n) throws IOException {	
 		

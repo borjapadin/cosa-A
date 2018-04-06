@@ -22,9 +22,10 @@ import org.apache.lucene.search.TopDocs;
 public class ThreadPool2 {
 	
 	public static final FieldType TYPE_BODY = new FieldType();
+	// indexa documentos y frecuencia
 	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS;
-
 	static {
+		//definimos las opciones de indexación
 		TYPE_BODY.setIndexOptions(options);
 		TYPE_BODY.setTokenized(true);
 		TYPE_BODY.setStored(true);
@@ -33,7 +34,16 @@ public class ThreadPool2 {
 		TYPE_BODY.freeze();
 	}
 	
-	
+	/**
+	 * Aquí realizamos el summaries realmente
+	 * 
+	 * Crea un índice con resúmenes de los documentos
+	 * en esta opción es necesario especificar las rutas para -indexin y -indexout
+	 * contiene los mismo campos y contenidos y un campo nuevo Resumen 
+	 * campo Resumen: contiene las dos frases más similares del campo body con respecto al campo título para cada documento
+	 * 
+	 * 
+	 * */
 	public static void process(IndexWriter writer, DirectoryReader indexReader, IndexSearcher indexSearcher, int index,
 			int count) throws IOException {
 		
@@ -108,6 +118,7 @@ public class ThreadPool2 {
 		public void run() {
 			System.out.println(String.format("I am the thread '%s'", Thread.currentThread().getName()));
 			try {
+				//llamamos al process para que haga la funcionalidad de summaries
 				process(writer, indexReader, indexSearcher, index, count);
 			} catch (IOException e) {
 				e.printStackTrace();
