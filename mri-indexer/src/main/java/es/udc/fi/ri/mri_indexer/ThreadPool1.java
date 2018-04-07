@@ -57,9 +57,15 @@ public class ThreadPool1 {
 				field = document.get(i++);
 				doc.add(new TextField("TOPICS", field, Field.Store.YES));
 				field = document.get(i++);
+				doc.add(new StringField("OldID", field,Field.Store.YES));
+				field = document.get(i++);
+				doc.add(new StringField("NewID", field,Field.Store.YES));
+				field = document.get(i++);
 				doc.add(new TextField("DATELINE", field, Field.Store.YES));
 				field = document.get(i++);
 				doc.add(new StringField("DATE", field, Field.Store.YES));
+				
+				
 				doc.add(new StringField("PathSgm", path.toString(), Field.Store.YES));
 				doc.add(new StringField("Hostname", hostname, Field.Store.YES));
 				doc.add(new StringField("Thread", Thread.currentThread().getName(), Field.Store.YES));

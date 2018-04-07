@@ -57,9 +57,19 @@ public class Reuters21578Parser {
 		/* The tag REUTERS identifies the beginning and end of each article */
 
 		for (int i = 0; i < lines.length; ++i) {
+			StringBuilder sb = new StringBuilder();
 			if (!lines[i].startsWith("<REUTERS"))
 				continue;
-			StringBuilder sb = new StringBuilder();
+			else {
+				String[] line = lines[i].split(" ");
+				for (int j = 0; j < line.length; j++) {
+					if ((line[j].contains("OLDID")) | (line[j].contains("NEWID"))){
+						String[] lineaux = line[j].split("=");
+						sb.append(lineaux[1]);
+					}
+				}
+				
+			}
 			
 			while (!lines[i].startsWith("</REUTERS")) {
 				sb.append(lines[i++]);
@@ -93,6 +103,23 @@ public class Reuters21578Parser {
 		String body = extract("BODY", text, true);
 		String date = extract("DATE", text, true);
 		
+		String[] linea = text.split("\n");
+		String[] cabecera = linea[0].split(" ");
+		String oldID=null;
+		String newID=null;
+		for (int i = 0; i<cabecera.length; i++) {
+			String[] aux;
+			if (cabecera[i].startsWith("OLDID")) {
+				aux= cabecera[i].split("=");
+				oldID = aux[1].substring(1, aux[1].length()-1);
+			}else if (cabecera[i].startsWith("NEWID")) {
+				aux= cabecera[i].split("=");
+				newID = aux[1].substring(1, aux[1].length()-2);
+			}
+		}
+		
+		
+		
 		
 		if (body.endsWith(END_BOILERPLATE_1)
 				|| body.endsWith(END_BOILERPLATE_2))
@@ -103,6 +130,12 @@ public class Reuters21578Parser {
 		document.add(body);
 		document.add(topics.replaceAll("\\<D\\>", " ").replaceAll("\\<\\/D\\>",
 				""));
+		try {
+			document.add(oldID);
+			document.add(newID);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		document.add(dateline);
 		document.add(date);
 		return document;
