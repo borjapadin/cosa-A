@@ -3,15 +3,15 @@ package es.udc.fi.ri.mri_indexer;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Reuters21578Parser {
+public class ReutersParser {
 	/*
 	 * Project testlucene 3.6.0, the Reuters21578Parser class parses the
 	 * collection.
 	 */
 	
 
-	private static final String END_BOILERPLATE_1 = "Reuter&#3;";
-	private static final String END_BOILERPLATE_2 = "REUTER&#3;";
+	private static final String END_BOILERPLATE_1 = "Reuter\n&#3";
+	private static final String END_BOILERPLATE_2 = "Reuter\n&#3";
 
 	// private static final String[] TOPICS = { "acq", "alum", "austdlr",
 	// "barley", "bean", "belly", "bfr", "bop", "cake", "can", "carcass",
@@ -58,6 +58,7 @@ public class Reuters21578Parser {
 
 		for (int i = 0; i < lines.length; ++i) {
 			StringBuilder sb = new StringBuilder();
+			
 			if (!lines[i].startsWith("<REUTERS"))
 				continue;
 			else {
@@ -68,8 +69,8 @@ public class Reuters21578Parser {
 						sb.append(lineaux[1]);
 					}
 				}
-				
 			}
+			
 			
 			while (!lines[i].startsWith("</REUTERS")) {
 				sb.append(lines[i++]);
@@ -103,10 +104,12 @@ public class Reuters21578Parser {
 		String body = extract("BODY", text, true);
 		String date = extract("DATE", text, true);
 		
+		//para extraer el OldID y NewId
 		String[] linea = text.split("\n");
 		String[] cabecera = linea[0].split(" ");
 		String oldID=null;
 		String newID=null;
+		
 		for (int i = 0; i<cabecera.length; i++) {
 			String[] aux;
 			if (cabecera[i].startsWith("OLDID")) {
@@ -117,8 +120,6 @@ public class Reuters21578Parser {
 				newID = aux[1].substring(1, aux[1].length()-2);
 			}
 		}
-		
-		
 		
 		
 		if (body.endsWith(END_BOILERPLATE_1)

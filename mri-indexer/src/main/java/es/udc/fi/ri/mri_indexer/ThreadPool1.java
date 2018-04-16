@@ -22,7 +22,8 @@ public class ThreadPool1 {
 
 	public static final FieldType TYPE_BODY = new FieldType();
 	// indexa documentos y frecuencia
-	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS; 
+	static final IndexOptions options = IndexOptions.DOCS_AND_FREQS_AND_POSITIONS;
+	
 	static {
 		//definimos las opciones de indexación
 		TYPE_BODY.setIndexOptions(options);
@@ -46,7 +47,7 @@ public class ThreadPool1 {
 			String str = IOUtils.toString(stream, "UTF-8");
 			StringBuffer strBuffer = new StringBuffer(str);
 			//generamos una lista de documentos, parseado con reuters, para extraer la información
-			List<List<String>> documents = Reuters21578Parser.parseString(strBuffer);
+			List<List<String>> documents = ReutersParser.parseString(strBuffer);
 			//para cada documento guardamos los datos que se muestran el bucle
 			for (List<String> document : documents) {
 				int i = 0;
@@ -64,8 +65,6 @@ public class ThreadPool1 {
 				doc.add(new TextField("DATELINE", field, Field.Store.YES));
 				field = document.get(i++);
 				doc.add(new StringField("DATE", field, Field.Store.YES));
-				
-				
 				doc.add(new StringField("PathSgm", path.toString(), Field.Store.YES));
 				doc.add(new StringField("Hostname", hostname, Field.Store.YES));
 				doc.add(new StringField("Thread", Thread.currentThread().getName(), Field.Store.YES));
@@ -98,6 +97,7 @@ public class ThreadPool1 {
 				}
 			});
 		} else {
+		
 			if (checkFileName(path)) {
 				indexDoc(writer, path, hostname);
 			}

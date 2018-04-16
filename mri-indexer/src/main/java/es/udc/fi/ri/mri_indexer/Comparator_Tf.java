@@ -2,10 +2,10 @@ package es.udc.fi.ri.mri_indexer;
 
 import java.util.Comparator;
 
-public class TfComparator implements Comparator<Termino>{
+public class Comparator_Tf implements Comparator<ListTermInfo>{
 
 	@Override
-	public int compare(Termino a, Termino b) {
+	public int compare(ListTermInfo a, ListTermInfo b) {
 		 return (int) Math.signum(b.getTf() - a.getTf());
 	}
 

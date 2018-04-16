@@ -1,46 +1,51 @@
 package es.udc.fi.ri.mri_indexer;
 
-import org.apache.lucene.index.PostingsEnum;
+import java.util.LinkedList;
 
-public class Termino {
+public class ListTermInfo {
 	
 	private String term;
 	private int docId;
 	private String pathSgm;
-	//private String oldId;
-	//private String newId;
 	private double tf;
-	private PostingsEnum positions; 
+	private LinkedList<Integer> positions;
 	private double df;
-		
+	private String newId;
+	private String oldId;
 	
-	public Termino(String term, int docId, String pathSgm, double tf, PostingsEnum positions, double df) {
+	public ListTermInfo(String term, int docId, String pathSgm, double tf, LinkedList<Integer> positions, double df,
+			String newId, String oldId) {
+		super();
 		this.term = term;
 		this.docId = docId;
 		this.pathSgm = pathSgm;
-		//this.oldId = oldId;
-		//this.newId = newId;
 		this.tf = tf;
 		this.positions = positions;
 		this.df = df;
+		this.newId = newId;
+		this.oldId = oldId;
 	}
-	
-	
+
 	public String getTerm() {
 		return term;
 	}
+
 	public void setTerm(String term) {
 		this.term = term;
 	}
+
 	public int getDocId() {
 		return docId;
 	}
+
 	public void setDocId(int docId) {
 		this.docId = docId;
 	}
+
 	public String getPathSgm() {
 		return pathSgm;
 	}
+
 	public void setPathSgm(String pathSgm) {
 		this.pathSgm = pathSgm;
 	}
@@ -48,28 +53,44 @@ public class Termino {
 	public double getTf() {
 		return tf;
 	}
-	
+
 	public void setTf(double tf) {
 		this.tf = tf;
 	}
-	
-	public PostingsEnum getPositions() {
+
+	public LinkedList<Integer> getPositions() {
 		return positions;
 	}
-	
-	public void setPositions(PostingsEnum positions) {
+
+	public void setPositions(LinkedList<Integer> positions) {
 		this.positions = positions;
 	}
-	
+
 	public double getDf() {
 		return df;
 	}
-	
+
 	public void setDf(double df) {
 		this.df = df;
 	}
-	
 
-	
+	public String getNewId() {
+		return newId;
+	}
 
+	public void setNewId(String newId) {
+		this.newId = newId;
+	}
+
+	public String getOldId() {
+		return oldId;
+	}
+
+	public void setOldId(String oldId) {
+		this.oldId = oldId;
+	}
+	
+	
+	
+	
 }
