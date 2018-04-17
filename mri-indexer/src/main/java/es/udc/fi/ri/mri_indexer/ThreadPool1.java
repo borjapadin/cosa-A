@@ -1,15 +1,19 @@
 package es.udc.fi.ri.mri_indexer;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -63,8 +67,9 @@ public class ThreadPool1 {
 				doc.add(new StringField("NewID", field,Field.Store.YES));
 				field = document.get(i++);
 				doc.add(new TextField("DATELINE", field, Field.Store.YES));
-				field = document.get(i++);
-				doc.add(new StringField("DATE", field, Field.Store.YES));
+				
+				//doc.add(new StringField("DATE", field, Field.Store.YES));
+				doc.add(new StringField("DATE", parseDate(document.get(i++)), Field.Store.YES));
 				doc.add(new StringField("PathSgm", path.toString(), Field.Store.YES));
 				doc.add(new StringField("Hostname", hostname, Field.Store.YES));
 				doc.add(new StringField("Thread", Thread.currentThread().getName(), Field.Store.YES));
@@ -160,6 +165,26 @@ public class ThreadPool1 {
 			}
 		}
 
+	}
+	
+	
+	public static String parseDate(String s){
+		SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss.sss");
+		try {
+			Date date = format.parse(s);
+			String luceneDate = DateTools.dateToString(date, DateTools.Resolution.MONTH);
+			return luceneDate;
+		} catch (ParseException e) {
+			s = "1-FEB-1900 24:00:00.51";
+			try {
+				Date date =  format.parse(s);
+				String luceneDate = DateTools.dateToString(date, DateTools.Resolution.MILLISECOND);
+				return luceneDate;
+			} catch (ParseException e1) {
+				System.out.println("IMPOSIBLE TO PARSE THE DATE");
+			}
+		}
+		return null;
 	}
 	
 }

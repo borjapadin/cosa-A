@@ -12,9 +12,11 @@ public class ListTermInfo {
 	private double df;
 	private String newId;
 	private String oldId;
+	private double tfIdf;
+	private String title;
 	
 	public ListTermInfo(String term, int docId, String pathSgm, double tf, LinkedList<Integer> positions, double df,
-			String newId, String oldId) {
+			String newId, String oldId, double tfIdf, String title) {
 		super();
 		this.term = term;
 		this.docId = docId;
@@ -24,6 +26,8 @@ public class ListTermInfo {
 		this.df = df;
 		this.newId = newId;
 		this.oldId = oldId;
+		this.tfIdf = tfIdf;
+		this.title = title;
 	}
 
 	public String getTerm() {
@@ -90,7 +94,21 @@ public class ListTermInfo {
 		this.oldId = oldId;
 	}
 	
+	public double getTfIdf() {
+		return tfIdf;
+	}
+
+	public void setTfIdf(double tfIdf) {
+		this.tfIdf = tfIdf;
+	}
 	
-	
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	
 }

@@ -9,9 +9,13 @@ public class ReutersParser {
 	 * collection.
 	 */
 	
-
-	private static final String END_BOILERPLATE_1 = "Reuter\n&#3";
-	private static final String END_BOILERPLATE_2 = "Reuter\n&#3";
+	//modificado para que no indexe los reuter del final de body
+	private static final String END_BOILERPLATE_1 = "Reuter\n&#3;";
+	private static final String END_BOILERPLATE_2 = "REUTER\n&#3;";
+	private static final String END_BOILERPLATE_3 = "reuter\n&#3;";
+	private static final String END_BOILERPLATE_4 = "REUTER...\n&#3;";
+	private static final String END_BOILERPLATE_5 = "Reuter...\n&#3;";
+	private static final String END_BOILERPLATE_6 = "reuter...\n&#3;";
 
 	// private static final String[] TOPICS = { "acq", "alum", "austdlr",
 	// "barley", "bean", "belly", "bfr", "bop", "cake", "can", "carcass",
@@ -123,7 +127,11 @@ public class ReutersParser {
 		
 		
 		if (body.endsWith(END_BOILERPLATE_1)
-				|| body.endsWith(END_BOILERPLATE_2))
+				|| body.endsWith(END_BOILERPLATE_2)
+				|| body.endsWith(END_BOILERPLATE_3)
+				|| body.endsWith(END_BOILERPLATE_4)
+				|| body.endsWith(END_BOILERPLATE_5)
+				|| body.endsWith(END_BOILERPLATE_6))
 			body = body
 					.substring(0, body.length() - END_BOILERPLATE_1.length());
 		List<String> document = new LinkedList<String>();

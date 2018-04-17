@@ -208,7 +208,8 @@ public class ReutersProcesserAndIndexer {
 			e1.printStackTrace();
 		}
 			
-		int numDocs = indexReaderIn.numDocs();
+		//int numDocs = indexReaderIn.numDocs();
+		int numDocs = indexReaderIn.maxDoc();
 		System.out.println("Hay un total de " + numDocs + " documentos" );
 		
 		if (n > 1) {

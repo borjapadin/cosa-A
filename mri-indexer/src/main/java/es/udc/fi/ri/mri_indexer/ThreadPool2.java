@@ -1,6 +1,6 @@
 package es.udc.fi.ri.mri_indexer;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -59,6 +59,7 @@ public class ThreadPool2 {
 			System.out.println("Extracción del los campos BODY y TTILE");
 			docTitle = doc.get("TITLE");
 			docBody = doc.get("BODY");
+			//System.out.println("El BODY del documento es \n" + docBody);
 
 			String[] phrases = null;
 			String phrase = new String();
@@ -69,10 +70,10 @@ public class ThreadPool2 {
 				// si el body es nulo, el resumen será nulo
 				Document doc1 = new Document();
 				doc1 = doc;
-				doc1.add(new TextField("RESUMEN", "nulo", Field.Store.YES));
+				doc1.add(new TextField("RESUMEN", null, Field.Store.YES));
 				indexWriterOut.addDocument(doc1);
-				indexWriter.commit();
-				indexWriter.close();
+				//indexWriter.commit();
+				//indexWriter.close();
 
 				// Si el título es nulo, el resumen contiene las dos primeras frases del body
 			} else if (docTitle == null) {
@@ -92,11 +93,19 @@ public class ThreadPool2 {
 			} else {
 				System.out.println("Los campos BODY y TITLE no son nulos..");
 				// creamos un doc con cada frase
-				phrases = docBody.split("\\.");
+				
+				//docBody.replaceAll("\\. ", "splitunodos");
+				//docBody.replaceAll("\\.\n", "splitunodos");
+				
+				//String[] phrases = docBody.split("splitunodos");
+				
+				phrases = docBody.split("\\.\n");
+			
 				System.out.println(
-						"Se van a crear " + (phrases.length - 1) + " documentos en el indice que esta en memoria: ");
+						"Se van a crear " + (phrases.length) + " documentos en el indice que esta en memoria: ");
+				
 				// phrases.length-1, porque lo ultimo que pilla es Reuter &#3 y no es relevante
-				for (int j = 0; j < (phrases.length - 1); ++j) {
+				for (int j = 0; j < (phrases.length); ++j) {
 					Document doc3 = new Document();
 					System.out.println(" - Creamos el documento " + j);
 					doc3.add(new TextField("FRASE", phrases[j], Field.Store.YES));
@@ -112,7 +121,7 @@ public class ThreadPool2 {
 
 				QueryParser parserPhrase = new QueryParser("FRASE", new StandardAnalyzer());
 
-				// lanzar una query con el títulofrente al índice formado por las frases del
+				// lanzar una query con el título frente al índice formado por las frases del
 				// body
 				try {
 					System.out.println("Parseando la query... ");

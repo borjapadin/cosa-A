@@ -211,7 +211,7 @@ public class ReutersIndexer {
 					
 					//se creará un índice en una subcarpeta de primer nivel de la carpeta -index pathname 		
 					File baseDirectory = new File(indexPath);
-					File subDirectory = new File(baseDirectory, "indiceCreado"+i);
+					File subDirectory = new File(baseDirectory, "indiceCreado" + i);
 					Path pathIndexCreado = subDirectory.toPath();	
 					i++;
 					System.out.println("Indice parcial creado en " + pathIndexCreado.toString());

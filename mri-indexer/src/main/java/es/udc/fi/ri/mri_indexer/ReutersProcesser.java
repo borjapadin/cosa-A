@@ -1,6 +1,6 @@
 package es.udc.fi.ri.mri_indexer;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,9 +77,10 @@ public class ReutersProcesser {
 
 		while (termsEnum.next() != null) {
 			int df_t = termsEnum.docFreq(); //df_t: número de documentos en los que aparece el término
-			double idf = Math.log10(numDocs / df_t); //idf: mide la especificidad del termino
+			double idf = Math.log10((double)numDocs / (double)df_t); //idf: mide la especificidad del termino
+			//double idf = (Math.log(numDocs / df_t))/Math.log(2);
 			
-			idfTerms.add(new TuplaTermIdf(termsEnum.term().utf8ToString(), idf));
+			idfTerms.add(new TuplaTermIdf(termsEnum.term().utf8ToString(), df_t, idf));
 		}
 
 		indexReader.close();
@@ -90,7 +91,7 @@ public class ReutersProcesser {
 		
 		for (int i = 1; i <= Math.min(n, idfTerms.size()); i++) {
 			TuplaTermIdf term = idfTerms.get(i - 1);
-			System.out.println("Nº " + i + "\tTERM: " + term.getTerm() + "\t\tIDF: " + term.getIdf());
+			System.out.println("Nº " + i + "\tTERM: " + term.getTerm() + "\t\tDF: " + term.getDf() + "\t\tIDF: " + term.getIdf());
 		}
 	}
 
@@ -121,6 +122,7 @@ public class ReutersProcesser {
 			e1.printStackTrace();
 		}
 
+		int numDocs = indexReader.numDocs(); 
 		//obtenemos los términos junto con el iterador para poder recorrer el índice
 		final Terms terms = MultiFields.getTerms(indexReader, field); //obtenemos los términos asociados al campo field
 		final TermsEnum termsEnum = terms.iterator(); //termsEnum permite iterar sobre los términos de un campo
@@ -133,6 +135,7 @@ public class ReutersProcesser {
 				System.out.println("JODER");
 				
 				int df = termsEnum.docFreq(); //dft: número de documentos en los que aparece el término
+				
 				PostingsEnum pe1 = null;
 				pe1 = termsEnum.postings(pe1, PostingsEnum.ALL);
 						
@@ -146,25 +149,35 @@ public class ReutersProcesser {
 					String pathSgm = doc.get("PathSgm");
 					String oldId = doc.get("OldID");
 					String newId = doc.get("NewID");
+					String title = doc.get("TITLE");
 					int tf = pe1.freq(); //tf: frecuencia del término en el documento
+					
+					double idf = Math.log10((double)numDocs / (double)df);
 				
 				    for (int k = 0; k<tf; k++){
 				    	positions.add(pe1.nextPosition());
 				    }
 				        									
-					termList.add(new ListTermInfo(term, docId, pathSgm, tf, positions, df, newId, oldId));
+					termList.add(new ListTermInfo(term, docId, pathSgm, tf, positions, df, newId, oldId, idf, title));
 				}			
 			}
 		}
 		
 		indexReader.close();
 		
+		
+		Collections.sort(termList, new Comparator_TfIdf());
+		//para devolver los peores: 
+		//Collections.reverse(idfTerms);
+		
+		//for (int j = 0; j < termList.size(); j++) {
 		for (int j = 0; j < termList.size(); j++) {
 			ListTermInfo tList = termList.get(j);
 			System.out.println(
 					"DocID: " + tList.getDocId() +	"\tPathSgm: " + tList.getPathSgm() + 
 					"\tOldId: " + tList.getOldId() + "\tNewId: " + tList.getNewId() +
-					"\tTF: " + tList.getTf() + "\tPos: " + tList.getPositions() + "\t\tDF: " + tList.getDf());
+					"\tTF: " + tList.getTf() + "\tPos: " + tList.getPositions() + "\t\tDF: " + tList.getDf()
+					+ "\tTF*IDF: " + tList.getTfIdf());
 		}	
 	}
 
@@ -197,6 +210,7 @@ public class ReutersProcesser {
 			e1.printStackTrace();
 		}
 
+		int numDocs = indexReader.numDocs(); 
 		//obtenemos los términos junto con el iterador para poder recorrer el índice
 		final Terms terms = MultiFields.getTerms(indexReader, field); //obtenemos los términos asociados al campo field
 		final TermsEnum termsEnum = terms.iterator(); //termsEnum permite iterar sobre los términos de un campo
@@ -220,13 +234,17 @@ public class ReutersProcesser {
 					String pathSgm = doc.get("PathSgm");
 					String oldId = doc.get("OldID");
 					String newId = doc.get("NewID");
+					String title = doc.get("TITLE");
 					int tf = pe1.freq(); //tf: frecuencia del término en el documento
 					
+					double idf = Math.log10((double)numDocs / (double)df);
+					
+					double tfidf = (double)tf * idf;
 					for (int k = 0; k<tf; k++){
 					    	positions.add(pe1.nextPosition());
 					}
 					
-					termList.add(new ListTermInfo(tt, docId, pathSgm, tf, positions, df, newId, oldId));
+					termList.add(new ListTermInfo(tt, docId, pathSgm, tf, positions, df, newId, oldId, tfidf, title));
 				}		
 			}
 		}
@@ -244,15 +262,19 @@ public class ReutersProcesser {
 		case 2: // por orden decreciente de df
 			Collections.sort(termList, new Comparator_Df());
 			break;
+		case 3: // por orden decreciente de df
+			Collections.sort(termList, new Comparator_TfIdf());
+			break;
 		}
 
 		System.out.println("Se van a mostrar " + termList.size() + " resultados");
-		for (int i = 0; i < termList.size(); i++) {
+		for (int i = 1; i <= Math.min(5, termList.size()); i++) {
 			ListTermInfo tList = termList.get(i);
 			System.out.println(
-					"Term: " + tList.getTerm() + "	\t\tDocID: " + tList.getDocId() +	"\tPathSgm: " + tList.getPathSgm() + 
+					"Term: " + tList.getTerm() + "\t\tDocID: " + tList.getDocId() + "\tPathSgm: " + tList.getPathSgm() + 
 					"\tOldId: " + tList.getOldId() + "\tNewId: " + tList.getNewId() +
-					"\tTF: " + tList.getTf()  + "\tPos: " + tList.getPositions() + "\t\tDF: " + tList.getDf());
+					"\tTF: " + tList.getTf() + "\tPos: " + tList.getPositions() + "\tDF: " + tList.getDf()
+					+ "\t\tTF*IDF: " + tList.getTfIdf() + "\t\tTITLE: " + tList.getTitle());
 		}
 	}
 
@@ -307,7 +329,7 @@ public class ReutersProcesser {
 						positions.add(pe1.nextPosition());
 					}
 					
-					termList.add(new ListTermInfo(tt, docIDpe, pathSgm, tf, positions, df, newId, oldId));
+					termList.add(new ListTermInfo(tt, docIDpe, pathSgm, tf, positions, df, newId, oldId,0, "nada"));
 				}
 			}		
 		}
